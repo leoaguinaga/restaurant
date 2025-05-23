@@ -230,7 +230,7 @@ function initSingModal() {
   const closeBtn = modal ? modal.getElementsByClassName('close')[0] : null;
   const singForm = document.getElementById('singForm');
   const loginModal = document.getElementById('loginModal');
-  const phoneError = document.getElementById('phoneError');
+  // const phoneError = document.getElementById('phoneError');
 
   if (modal && openBtn && closeBtn && singForm) {
     openBtn.onclick = function (e) {
@@ -257,6 +257,7 @@ function initSingModal() {
       document.body.style.overflow = 'auto';
     }
 
+    /*
     singForm.onsubmit = function (e) {
       e.preventDefault();
       const email = document.getElementById('s-email').value;
@@ -272,7 +273,17 @@ function initSingModal() {
 
       phoneError.style.display = 'none';
       closeModal();
+
+      fetch('singin', {
+        method: 'POST'
+      }).then(response => {
+        if (response.ok) {
+          localStorage.removeItem('cart');
+          console.log('Carrito vaciado.');
+          window.location.href = 'confirmation';
+        }})
     }
+     */
   }
 }
 

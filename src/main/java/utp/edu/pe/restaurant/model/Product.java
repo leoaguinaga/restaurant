@@ -9,6 +9,7 @@ public class Product {
     private String name;
     private String image;
     private double price;
+    private String description;
     private Product_Type product_type;
 
     public Product(Builder builder) {
@@ -16,6 +17,7 @@ public class Product {
         this.name = builder.name;
         this.image = builder.image;
         this.price = builder.price;
+        this.description = builder.description;
         this.product_type = builder.product_type;
     }
 
@@ -24,13 +26,15 @@ public class Product {
         private String name;
         private String image;
         private double price;
+        private String description;
         private Product_Type product_type;
 
-        public Builder(String name, String image, double price, Product_Type product_type) {
+        public Builder(String name, String image, double price, String description, Product_Type product_type) {
             this.product_id = 0;
             this.name = name;
             this.image = image;
             this.price = price;
+            this.description = description;
             this.product_type = product_type;
         }
 
@@ -47,14 +51,15 @@ public class Product {
     public String getName() { return name; }
     public String getImage() { return image; }
     public double getPrice() { return price; }
+    public String getDescription() { return description; }
     public Product_Type getProduct_type() { return product_type; }
 
 
-    public static Product createProductWithoutId(String name, String image, double price, Product_Type product_type) throws IOException {
-        return new Builder(name, image, price, product_type).build();
+    public static Product createProductWithoutId(String name, String image, double price, String description, Product_Type product_type) throws IOException {
+        return new Builder(name, image, price, description, product_type).build();
     }
 
-    public static Product createProduct(long product_id, String name, String image, double price, Product_Type product_type) {
-        return new Builder(name, image, price, product_type).withProduct_id(product_id).build();
+    public static Product createProduct(long product_id, String name, String image, double price, String description, Product_Type product_type) {
+        return new Builder(name, image, price, description, product_type).withProduct_id(product_id).build();
     }
 }

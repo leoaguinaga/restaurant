@@ -12,20 +12,21 @@ import java.sql.*;
 import java.util.Stack;
 
 public class OrderDao implements Order_Methods {
+
     @Override
     public void registerOrder(Order order) throws SQLException {
         String query = "INSERT INTO order (user_id, date, address, amount, state, evidence) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection cnn = DataAccessMariaDB.getConnection(DataAccessMariaDB.TipoDA.valueOf(AppConfig.getSourceType()), AppConfig.getDatasource());
-             CallableStatement cs = cnn.prepareCall(query)) {
+             PreparedStatement ps = cnn.prepareStatement(query)) {
 
             long user_id = (order.getUser() != null) ? order.getUser().getUser_id() : order.getUser_id();
-            cs.setLong(1, user_id);
-            cs.setTimestamp(2, Timestamp.valueOf(order.getOrder_date()));
-            cs.setString(3, order.getAddress());
-            cs.setDouble(4, order.getAmount());
-            cs.setString(5, String.valueOf(order.getState()));
-            cs.setString(6, order.getEvidence_image());
-            cs.executeUpdate();
+            ps.setLong(1, user_id);
+            ps.setTimestamp(2, Timestamp.valueOf(order.getOrder_date()));
+            ps.setString(3, order.getAddress());
+            ps.setDouble(4, order.getAmount());
+            ps.setString(5, String.valueOf(order.getState()));
+            ps.setString(6, order.getEvidence_image());
+            ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error al registrar la orden", e);
         } catch (NamingException e) {
@@ -38,8 +39,8 @@ public class OrderDao implements Order_Methods {
         Stack<Order> orders = new Stack<>();
         String query = "SELECT * FROM order";
         try (Connection cnn = DataAccessMariaDB.getConnection(DataAccessMariaDB.TipoDA.valueOf(AppConfig.getSourceType()), AppConfig.getDatasource());
-             CallableStatement cs = cnn.prepareCall(query);
-             ResultSet rs = cs.executeQuery()) {
+             PreparedStatement ps = cnn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 orders.push(
                         Order.createOrder(

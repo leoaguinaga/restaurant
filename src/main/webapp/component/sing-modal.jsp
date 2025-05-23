@@ -3,7 +3,7 @@
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Regístrate</h2>
-    <form id="singForm" action="sing" method="post">
+    <form id="singForm" action="<%= request.getContextPath() %>/singin" method="post">
       <div class="form-group">
         <label for="s-email">Correo electrónico</label>
         <input type="email" id="s-email" name="s-email" placeholder="tucorreo@ejemplo.com" required>

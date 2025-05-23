@@ -1,8 +1,10 @@
-<%@ page import="pe.edu.utp.blackdog.model.Product" %>
+<%@ page import="utp.edu.pe.restaurant.model.Product" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="utp.edu.pe.restaurant.model.enums.Product_Type" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
+    List<Product_Type> productTypes = Product_Type.getProductTypes();
     List<Product> products = (List<Product>) request.getAttribute("products");
     Map<Long, String> productIngredientsMap = (Map<Long, String>) request.getAttribute("productIngredientsMap");
 %>
@@ -17,30 +19,14 @@
   <div class="menu-content">
     <div class="categories">
       <ul>
+        <%for(Product_Type productType : productTypes){%>
         <li>
           <form>
-            <input type="text" value="HAMBURGER" hidden name="type">
-            <button formaction="menu" formmethod="post" class="category-button" type="submit">Hamburguesas</button>
+            <input type="text" value="<%=productType%>" hidden name="type">
+            <button formaction="menu" formmethod="post" class="category-button" type="submit"><%=productType.getDisplayName().toUpperCase()%></button>
           </form>
         </li>
-        <li>
-          <form>
-            <input type="text" value="CHAUFA" hidden name="type">
-            <button formaction="menu" formmethod="post" class="category-button" type="submit">Chaufas</button>
-          </form>
-        </li>
-        <li>
-          <form>
-            <input type="text" value="SALCHIPAPA" hidden name="type">
-            <button formaction="menu" formmethod="post" class="category-button" type="submit">Salchipapas</button>
-          </form>
-        </li>
-        <li>
-          <form>
-            <input type="text" value="DRINK" hidden name="type">
-            <button formaction="menu" formmethod="post" class="category-button"type="submit">Bebidas</button>
-          </form>
-        </li>
+        <%}%>
       </ul>
     </div>
     <% if (products != null && !products.isEmpty()) {%>
@@ -49,7 +35,7 @@
         <% String ingredients = productIngredientsMap != null ? productIngredientsMap.get(product.getProduct_id()) : null; %>
       <div class="product-card" id="<%= product.getName() %>">
         <div class="product-image">
-          <img src="image?img=<%= product.getImage() %>" alt="<%= product.getName() %>" id="product-image-<%= product.getProduct_id() %>"">
+          <img src="image?img=<%= product.getImage() %>" alt="<%= product.getName() %>" id="product-image-<%= product.getProduct_id() %>">
         </div>
         <div class="product-info">
           <h2 id="product-name-<%= product.getProduct_id() %>"><%= product.getName() %></h2>

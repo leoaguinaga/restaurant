@@ -24,7 +24,6 @@ public class Order_DetailDao implements Order_Detail_Methods {
             ps.setLong(1, orderDetail.getOrder_id());
             ps.setLong(2, orderDetail.getProduct().getProduct_id());
             ps.setInt(3, orderDetail.getQuantity());
-            ps.setString(4, orderDetail.getExtras().toString());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error al registrar el detalle de la orden", e);
@@ -36,9 +35,9 @@ public class Order_DetailDao implements Order_Detail_Methods {
         String query = "SELECT * FROM order_detail WHERE order_id = ?";
         List<Order_Detail> order_details = new ArrayList<>();
         try (Connection cnn = DataAccessMariaDB.getConnection(DataAccessMariaDB.TipoDA.DATASOURCE, AppConfig.getDatasource());
-             CallableStatement cs = cnn.prepareCall(query)) {
-            cs.setLong(1, order_id);
-            try (ResultSet rs = cs.executeQuery()) {
+             PreparedStatement ps = cnn.prepareStatement(query)) {
+            ps.setLong(1, order_id);
+            try (ResultSet rs = ps.executeQuery()) {
                 ProductDao productDAO = new ProductDao();
                 Gson gson = new Gson();
                 while (rs.next()) {
@@ -47,8 +46,7 @@ public class Order_DetailDao implements Order_Detail_Methods {
                     order_details.add(Order_Detail.createOrderDetail(
                             (rs.getLong("order_id")),
                             productDAO.getProductById(rs.getLong("product_id")),
-                            rs.getInt("quantity"),
-                            extras
+                            rs.getInt("quantity")
                     ));
                 }
                 if (order_details.isEmpty()) {

@@ -68,6 +68,7 @@ public class User {
     public static User createUserWithoutId(String full_name, String email, String phone_number, String pwd, User_Type user_type){
         return new Builder(full_name, email, phone_number, pwd, user_type).build();
     }
+
     public static User createUser(long worker_id, String full_name, String email, String phone_number, String pwd, User_Type user_type){
         return new Builder(full_name, email, phone_number, pwd, user_type).withUser_id(worker_id).build();
     }

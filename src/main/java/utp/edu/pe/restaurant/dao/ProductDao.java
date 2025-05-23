@@ -14,14 +14,15 @@ import java.util.List;
 public class ProductDao implements Product_Methods {
     @Override
     public void registerProduct(Product product) throws SQLException, NamingException {
-        String query = "INSERT INTO product (name, image, price, product_type) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO product (name, image, price, decription, type) VALUES (?, ?, ?, ?, ?)";
         try (Connection cnn = DataAccessMariaDB.getConnection(DataAccessMariaDB.TipoDA.valueOf(AppConfig.getSourceType()), "java:/MariaDB");
-             CallableStatement cs = cnn.prepareCall(query)) {
-            cs.setString(1, product.getName());
-            cs.setString(2, product.getImage());
-            cs.setDouble(3, product.getPrice());
-            cs.setString(4, product.getProduct_type().toString());
-            int rowsAffected = cs.executeUpdate();
+             PreparedStatement ps = cnn.prepareStatement(query)) {
+            ps.setString(1, product.getName());
+            ps.setString(2, product.getImage());
+            ps.setDouble(3, product.getPrice());
+            ps.setString(4, product.getDescription());
+            ps.setString(5, product.getProduct_type().toString());
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected == 0) {
                 throw new SQLException("No se pudo registrar el producto en la base de datos.");
             }
@@ -33,14 +34,15 @@ public class ProductDao implements Product_Methods {
         List<Product> products = new ArrayList<>();
         String query = "SELECT * FROM product";
         try (Connection cnn = DataAccessMariaDB.getConnection(DataAccessMariaDB.TipoDA.valueOf(AppConfig.getSourceType()), AppConfig.getDatasource());
-             CallableStatement cs = cnn.prepareCall(query);
-             ResultSet rs = cs.executeQuery()) {
+             PreparedStatement ps = cnn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 products.add(Product.createProduct(
                         rs.getLong("product_id"),
                         rs.getString("name"),
                         rs.getString("image"),
                         rs.getDouble("price"),
+                        rs.getString("description"),
                         Product_Type.valueOf(rs.getString("type"))
                 ));
             }
@@ -54,17 +56,18 @@ public class ProductDao implements Product_Methods {
     @Override
     public List<Product> getProductsByType(Product_Type productType) throws SQLException, NamingException {
         List<Product> products = new ArrayList<>();
-        String query = "SELECT * FROM product WHERE product_type = ?";
+        String query = "SELECT * FROM product WHERE type = ?";
         try (Connection cnn = DataAccessMariaDB.getConnection(DataAccessMariaDB.TipoDA.valueOf(AppConfig.getSourceType()), AppConfig.getDatasource());
-             CallableStatement cs = cnn.prepareCall(query)) {
-            cs.setString(1, productType.toString());
-            try (ResultSet rs = cs.executeQuery()) {
+             PreparedStatement ps = cnn.prepareStatement(query)) {
+            ps.setString(1, productType.toString());
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     products.add(Product.createProduct(
                             rs.getLong("product_id"),
                             rs.getString("name"),
                             rs.getString("image"),
                             rs.getDouble("price"),
+                            rs.getString("description"),
                             Product_Type.valueOf(rs.getString("type"))
                     ));
                 }
@@ -78,15 +81,16 @@ public class ProductDao implements Product_Methods {
         String query = "SELECT * FROM product WHERE product_id = ?";
         Product product = null;
         try (Connection cnn = DataAccessMariaDB.getConnection(DataAccessMariaDB.TipoDA.valueOf(AppConfig.getSourceType()), AppConfig.getDatasource());
-             CallableStatement cs = cnn.prepareCall(query)) {
-            cs.setLong(1, product_id);
-            try (ResultSet rs = cs.executeQuery()) {
+             PreparedStatement ps = cnn.prepareStatement(query)) {
+            ps.setLong(1, product_id);
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     product = Product.createProduct(
                             rs.getLong("product_id"),
                             rs.getString("name"),
                             rs.getString("image"),
                             rs.getDouble("price"),
+                            rs.getString("description"),
                             Product_Type.valueOf(rs.getString("type"))
                     );
                 } else {
@@ -111,6 +115,7 @@ public class ProductDao implements Product_Methods {
                             rs.getString("name"),
                             rs.getString("image"),
                             rs.getDouble("price"),
+                            rs.getString("description"),
                             Product_Type.valueOf(rs.getString("type"))
                     );
                 } else {
@@ -126,15 +131,16 @@ public class ProductDao implements Product_Methods {
 
     @Override
     public void updateProduct(Product product, long product_id) throws SQLException, NamingException {
-        String query = "UPDATE product SET name = ?, image = ?, price = ?, product_type = ? WHERE product_id = ?";
+        String query = "UPDATE product SET name = ?, image = ?, price = ?, description = ?,  type = ? WHERE product_id = ?";
         try (Connection cnn = DataAccessMariaDB.getConnection(DataAccessMariaDB.TipoDA.valueOf(AppConfig.getSourceType()), AppConfig.getDatasource());
-             CallableStatement cs = cnn.prepareCall(query)) {
-            cs.setString(1, product.getName());
-            cs.setString(2, product.getImage());
-            cs.setDouble(3, product.getPrice());
-            cs.setString(4, product.getProduct_type().toString());
-            cs.setLong(5, product_id);
-            int rowsAffected = cs.executeUpdate();
+             PreparedStatement ps = cnn.prepareStatement(query)) {
+            ps.setString(1, product.getName());
+            ps.setString(2, product.getImage());
+            ps.setDouble(3, product.getPrice());
+            ps.setString(4, product.getDescription());
+            ps.setString(5, product.getProduct_type().toString());
+            ps.setLong(6, product_id);
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected == 0) {
                 throw new SQLException("No se pudo actualizar el producto en la base de datos.");
             }
@@ -145,9 +151,9 @@ public class ProductDao implements Product_Methods {
     public void deleteProduct(long product_id) throws SQLException, NamingException {
         String query = "DELETE FROM product WHERE product_id = ?";
         try (Connection cnn = DataAccessMariaDB.getConnection(DataAccessMariaDB.TipoDA.valueOf(AppConfig.getSourceType()), AppConfig.getDatasource());
-             CallableStatement cs = cnn.prepareCall(query)) {
-            cs.setLong(1, product_id);
-            cs.executeUpdate();
+             PreparedStatement ps = cnn.prepareStatement(query)) {
+            ps.setLong(1, product_id);
+            ps.executeUpdate();
         }
     }
 
@@ -156,14 +162,15 @@ public class ProductDao implements Product_Methods {
         String query = "SELECT * FROM product ORDER BY product_id DESC LIMIT 1";
         Product product = null;
         try (Connection cnn = DataAccessMariaDB.getConnection(DataAccessMariaDB.TipoDA.valueOf(AppConfig.getSourceType()), AppConfig.getDatasource());
-             CallableStatement cs = cnn.prepareCall(query);
-             ResultSet rs = cs.executeQuery()) {
+             PreparedStatement ps = cnn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 product = Product.createProduct(
                         rs.getLong("product_id"),
                         rs.getString("name"),
                         rs.getString("image"),
                         rs.getDouble("price"),
+                        rs.getString("description"),
                         Product_Type.valueOf(rs.getString("type"))
                 );
             } else {

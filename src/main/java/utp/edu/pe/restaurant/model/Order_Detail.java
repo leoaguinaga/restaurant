@@ -6,13 +6,11 @@ public class Order_Detail {
     private long order_id;
     private Product product;
     private int quantity;
-    private List<Extra> extras;
 
     public Order_Detail(Builder builder) {
         this.order_id = builder.order_id;
         this.product = builder.product;
         this.quantity = builder.quantity;
-        this.extras = builder.extras;
     }
 
     //INNER CLASS: BUILDER
@@ -20,13 +18,11 @@ public class Order_Detail {
         private long order_id;
         private Product product;
         private int quantity;
-        private List<Extra> extras;
 
-        public Builder(long order_id, Product product, int quantity, List<Extra> extras) {
+        public Builder(long order_id, Product product, int quantity) {
             this.order_id = order_id;
             this.product = product;
             this.quantity = quantity;
-            this.extras = extras;
         }
 
         public Order_Detail build() {
@@ -44,13 +40,10 @@ public class Order_Detail {
     public int getQuantity() {
         return quantity;
     }
-    public List<Extra> getExtras() {
-        return extras;
-    }
 
     // CREATE ORDER DETAIL
-    public static Order_Detail createOrderDetail(long order_id, Product product, int quantity, List<Extra> extras){
-        return new Builder(order_id, product, quantity, extras).build();
+    public static Order_Detail createOrderDetail(long order_id, Product product, int quantity){
+        return new Builder(order_id, product, quantity).build();
     }
 
     @Override
@@ -59,7 +52,6 @@ public class Order_Detail {
                 "order_id=" + order_id +
                 ", product=" + product +
                 ", quantity=" + quantity +
-                ", extras=" + extras +
                 '}';
     }
 }

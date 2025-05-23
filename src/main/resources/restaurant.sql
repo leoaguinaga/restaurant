@@ -16,7 +16,7 @@ CREATE TABLE product (
     name VARCHAR(255) NOT NULL,
     image VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    descriotion 
+    description VARCHAR(255) NOT NULL,
     type ENUM('burger', 'drink', 'salchipapa', 'chaufa') NOT NULL
 );
 
@@ -47,3 +47,6 @@ CREATE TABLE order_detail (
     FOREIGN KEY (order_id) REFERENCES `order`(order_id),
     FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
+
+grant all privileges on restaurant.* to'restaurant'@'localhost' identified by '123456';
+flush privileges;

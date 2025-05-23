@@ -7,7 +7,7 @@ import java.util.List;
 public enum User_Type {
     client("Cliente"),
     admin("Administrador"),
-    delivery("Repartidor"),
+    driver("Repartidor"),
     chef("Cocinero");
 
     private final String displayName;
